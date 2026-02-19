@@ -32,12 +32,13 @@ jobs:
           -scheme fheroes2 \
           -configuration Release \
           -sdk iphoneos \
-          -destination 'generic/platform=iOS' \
+          -destination "generic/platform=iOS" \
           archive \
-          -archivePath $PWD/build/fheroes2.xcarchive \
+          -archivePath "$PWD/build/fheroes2.xcarchive" \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO \
-          EXCLUDED_SOURCE_FILE_NAMES="SDL2/src/misc/macosx/*"
+          EXCLUDED_SOURCE_FILE_NAMES="SDL2/src/misc/macosx/*" \
+          OTHER_LDFLAGS="-framework AudioToolbox -framework CoreAudio -framework CoreFoundation -framework CoreVideo -weak_framework GameController -weak_framework CoreHaptics -weak_framework Metal -weak_framework QuartzCore"
 
     - name: Create IPA
       run: |
