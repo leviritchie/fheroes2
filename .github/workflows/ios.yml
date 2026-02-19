@@ -32,9 +32,12 @@ jobs:
           -scheme fheroes2 \
           -configuration Release \
           -sdk iphoneos \
+          -destination 'generic/platform=iOS' \
           archive \
           -archivePath $PWD/build/fheroes2.xcarchive \
-          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          ONLY_ACTIVE_ARCH=NO
 
     - name: Create IPA
       run: |
