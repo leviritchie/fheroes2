@@ -37,7 +37,7 @@ jobs:
           -archivePath $PWD/build/fheroes2.xcarchive \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=NO
+          EXCLUDED_SOURCE_FILE_NAMES="SDL2/src/misc/macosx/*"
 
     - name: Create IPA
       run: |
