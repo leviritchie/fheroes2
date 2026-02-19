@@ -1,36 +1,51 @@
 name: iOS
 
 on:
-  workflow_call:
-
-permissions:
-  contents: write
+  workflow_dispatch:
 
 jobs:
   ios:
-    name: iOS
+    name: iOS Device Build
     runs-on: macos-latest
     timeout-minutes: 30
+
     steps:
-    - uses: actions/checkout@v6
-    - name: check Xcode version
-      run: |
-        /usr/bin/xcodebuild -version
+    - uses: actions/checkout@v4
+
+    - name: Check Xcode version
+      run: xcodebuild -version
+
     - name: Install dependencies
-      run: |
-        ./script/ios/install_packages.sh
-    # TODO: remove this step once we figure out how to build without the need of resources.
+      run: ./script/ios/install_packages.sh
+
     - name: Prepare build
       run: |
         mkdir anim
         mkdir data
         mkdir music
-    - name: Build
-      # TODO: compile for a proper target, not for simulator.
+
+    - name: Archive (device build, no signing)
       run: |
         cd ios
-        xcodebuild -project fheroes2.xcodeproj \
+        xcodebuild \
+          -project fheroes2.xcodeproj \
           -scheme fheroes2 \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
-          build
-    # TODO: add signing stage.
+          -configuration Release \
+          -sdk iphoneos \
+          archive \
+          -archivePath $PWD/build/fheroes2.xcarchive \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Create IPA
+      run: |
+        cd ios
+        mkdir -p build/ipa/Payload
+        cp -r build/fheroes2.xcarchive/Products/Applications/*.app build/ipa/Payload/
+        cd build/ipa
+        zip -r fheroes2.ipa Payload
+
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: fheroes2-ipa
+        path: ios/build/ipa/fheroes2.ipa
