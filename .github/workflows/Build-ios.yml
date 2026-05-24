@@ -1,6 +1,16 @@
 name: Build iOS IPA
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/Build-ios.yml'
+      - 'ios/**'
+      - 'script/demo/**'
+      - 'script/ios/**'
+      - 'files/soundfonts/**'
+      - 'files/timidity/**'
   workflow_dispatch:
     inputs:
       include_demo_data:
@@ -32,10 +42,14 @@ jobs:
 
       - name: Build IPA
         env:
-          FHEROES2_IOS_INCLUDE_DEMO_DATA: ${{ inputs.include_demo_data }}
-          FHEROES2_IOS_BUNDLE_IDENTIFIER: ${{ inputs.bundle_identifier }}
-          FHEROES2_IOS_DEVELOPMENT_TEAM: ${{ inputs.development_team }}
-        run: bash ./script/ios/build_ipa.sh
+          WORKFLOW_INCLUDE_DEMO_DATA: ${{ inputs.include_demo_data }}
+          WORKFLOW_BUNDLE_IDENTIFIER: ${{ inputs.bundle_identifier }}
+          WORKFLOW_DEVELOPMENT_TEAM: ${{ inputs.development_team }}
+        run: |
+          export FHEROES2_IOS_INCLUDE_DEMO_DATA="${WORKFLOW_INCLUDE_DEMO_DATA:-true}"
+          export FHEROES2_IOS_BUNDLE_IDENTIFIER="${WORKFLOW_BUNDLE_IDENTIFIER:-io.github.leviritchie.fheroes2}"
+          export FHEROES2_IOS_DEVELOPMENT_TEAM="${WORKFLOW_DEVELOPMENT_TEAM:-}"
+          bash ./script/ios/build_ipa.sh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
