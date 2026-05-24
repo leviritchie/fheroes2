@@ -36,6 +36,7 @@ IPA_PATH="${FHEROES2_IOS_IPA_PATH:-$BUILD_DIR/fheroes2.ipa}"
 BUNDLE_IDENTIFIER="${FHEROES2_IOS_BUNDLE_IDENTIFIER:-io.github.leviritchie.fheroes2}"
 DEVELOPMENT_TEAM_VALUE="${FHEROES2_IOS_DEVELOPMENT_TEAM:-${DEVELOPMENT_TEAM:-}}"
 INCLUDE_DEMO_DATA="${FHEROES2_IOS_INCLUDE_DEMO_DATA:-1}"
+DEFAULT_BUNDLE_IDENTIFIER="io.github.leviritchie.fheroes2"
 
 is_truthy() {
     case "$1" in
@@ -123,7 +124,6 @@ archive_app() {
         -destination "generic/platform=iOS" \
         archive \
         -archivePath "$ARCHIVE_PATH" \
-        PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_IDENTIFIER" \
         EXCLUDED_SOURCE_FILE_NAMES="SDL2/src/misc/macosx/*" \
         OTHER_LDFLAGS="-framework AudioToolbox -framework CoreAudio -framework CoreFoundation -framework CoreVideo -weak_framework GameController -weak_framework CoreHaptics -weak_framework Metal -weak_framework QuartzCore" \
         "${signing_args[@]}"
@@ -142,6 +142,18 @@ package_ipa() {
         exit 1
     fi
     app_dir="${app_candidates[0]}"
+
+    if [[ -n "$BUNDLE_IDENTIFIER" ]]; then
+        if [[ -n "$DEVELOPMENT_TEAM_VALUE" ]]; then
+            if [[ "$BUNDLE_IDENTIFIER" != "$DEFAULT_BUNDLE_IDENTIFIER" ]]; then
+                echo "FHEROES2_IOS_BUNDLE_IDENTIFIER cannot be changed after an Xcode-signed archive without invalidating the signature."
+                echo "For signed builds, set the bundle identifier in the Xcode project or build unsigned for external signing."
+                exit 1
+            fi
+        else
+            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_IDENTIFIER" "$app_dir/Info.plist"
+        fi
+    fi
 
     rm -rf "$IPA_STAGING_DIR"
     mkdir -p "$IPA_STAGING_DIR/Payload"
