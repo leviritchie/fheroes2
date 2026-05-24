@@ -2,6 +2,22 @@ name: Build iOS IPA
 
 on:
   workflow_dispatch:
+    inputs:
+      include_demo_data:
+        description: Bundle the free Heroes II demo data into the IPA when local game data is absent.
+        required: true
+        default: true
+        type: boolean
+      bundle_identifier:
+        description: iOS bundle identifier to build into the app.
+        required: true
+        default: io.github.leviritchie.fheroes2
+        type: string
+      development_team:
+        description: Optional Apple development team ID. Leave empty to build an unsigned IPA for sideload signing tools.
+        required: false
+        default: ''
+        type: string
 
 jobs:
   build:
@@ -14,28 +30,15 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Build iOS archive
-        run: |
-          cd ios
-          xcodebuild \
-            -project fheroes2.xcodeproj \
-            -scheme fheroes2 \
-            -configuration Release \
-            -sdk iphoneos \
-            archive \
-            -archivePath $PWD/build/fheroes2.xcarchive \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Export unsigned IPA
-        run: |
-          cd ios
-          mkdir -p build/ipa
-          cp -r build/fheroes2.xcarchive/Products/Applications/*.app build/ipa/
-          cd build/ipa
-          zip -r fheroes2.ipa *.app
+      - name: Build IPA
+        env:
+          FHEROES2_IOS_INCLUDE_DEMO_DATA: ${{ inputs.include_demo_data }}
+          FHEROES2_IOS_BUNDLE_IDENTIFIER: ${{ inputs.bundle_identifier }}
+          FHEROES2_IOS_DEVELOPMENT_TEAM: ${{ inputs.development_team }}
+        run: bash ./script/ios/build_ipa.sh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: fheroes2-ipa
-          path: ios/build/ipa/fheroes2.ipa
+          path: ios/build/fheroes2.ipa

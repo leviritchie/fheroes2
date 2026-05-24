@@ -2,6 +2,22 @@ name: iOS
 
 on:
   workflow_dispatch:
+    inputs:
+      include_demo_data:
+        description: Bundle the free Heroes II demo data into the IPA when local game data is absent.
+        required: true
+        default: true
+        type: boolean
+      bundle_identifier:
+        description: iOS bundle identifier to build into the app.
+        required: true
+        default: io.github.leviritchie.fheroes2
+        type: string
+      development_team:
+        description: Optional Apple development team ID. Leave empty to build an unsigned IPA for sideload signing tools.
+        required: false
+        default: ''
+        type: string
 
 jobs:
   ios:
@@ -15,41 +31,15 @@ jobs:
     - name: Check Xcode version
       run: xcodebuild -version
 
-    - name: Install dependencies
-      run: ./script/ios/install_packages.sh
-
-    - name: Prepare build
-      run: |
-        mkdir anim
-        mkdir data
-        mkdir music
-
-    - name: Archive (device build, no signing)
-      run: |
-        cd ios
-        xcodebuild \
-          -project fheroes2.xcodeproj \
-          -scheme fheroes2 \
-          -configuration Release \
-          -sdk iphoneos \
-          -destination "generic/platform=iOS" \
-          archive \
-          -archivePath "$PWD/build/fheroes2.xcarchive" \
-          CODE_SIGNING_ALLOWED=NO \
-          CODE_SIGNING_REQUIRED=NO \
-          EXCLUDED_SOURCE_FILE_NAMES="SDL2/src/misc/macosx/*" \
-          OTHER_LDFLAGS="-framework AudioToolbox -framework CoreAudio -framework CoreFoundation -framework CoreVideo -weak_framework GameController -weak_framework CoreHaptics -weak_framework Metal -weak_framework QuartzCore"
-
-    - name: Create IPA
-      run: |
-        cd ios
-        mkdir -p build/ipa/Payload
-        cp -r build/fheroes2.xcarchive/Products/Applications/*.app build/ipa/Payload/
-        cd build/ipa
-        zip -r fheroes2.ipa Payload
+    - name: Build IPA
+      env:
+        FHEROES2_IOS_INCLUDE_DEMO_DATA: ${{ inputs.include_demo_data }}
+        FHEROES2_IOS_BUNDLE_IDENTIFIER: ${{ inputs.bundle_identifier }}
+        FHEROES2_IOS_DEVELOPMENT_TEAM: ${{ inputs.development_team }}
+      run: bash ./script/ios/build_ipa.sh
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
         name: fheroes2-ipa
-        path: ios/build/ipa/fheroes2.ipa
+        path: ios/build/fheroes2.ipa

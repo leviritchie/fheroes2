@@ -20,63 +20,102 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ###########################################################################
 
-set -e -o pipefail
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+IOS_DIR="$REPO_ROOT/ios"
+TMP_DIR="$(mktemp -d)"
+FORCE_INSTALL=0
+
+if [[ "${1:-}" == "--force" ]]; then
+    FORCE_INSTALL=1
+fi
+
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+download_package() {
+    local package_url="$1"
+    local package_file="$2"
+
+    if [[ -n "$(command -v wget)" ]]; then
+        wget -O "$TMP_DIR/$package_file" "$package_url"
+    elif [[ -n "$(command -v curl)" ]]; then
+        curl -o "$TMP_DIR/$package_file" -L "$package_url"
+    else
+        echo "Neither wget nor curl were found in your system. Unable to download the package archive. Installation aborted."
+        exit 1
+    fi
+}
+
+verify_package() {
+    local package_file="$1"
+    local package_sha256="$2"
+
+    echo "$package_sha256 *$package_file" > "$TMP_DIR/checksums"
+
+    if [[ -n "$(command -v shasum)" ]]; then
+        (cd "$TMP_DIR" && shasum --check --algorithm 256 checksums)
+    elif [[ -n "$(command -v sha256sum)" ]]; then
+        (cd "$TMP_DIR" && sha256sum --check --strict checksums)
+    else
+        echo "Neither shasum nor sha256sum were found in your system. Unable to verify the downloaded file. Installation aborted."
+        exit 1
+    fi
+}
+
+install_package() {
+    local package_name="$1"
+    local package_file="$2"
+    local package_sha256="$3"
+    local package_url="$4"
+    local extracted_name="$5"
+    local target_name="$6"
+    local target_dir="$IOS_DIR/$target_name"
+
+    if [[ -d "$target_dir" ]]; then
+        if [[ "$FORCE_INSTALL" -eq 0 ]]; then
+            echo "$target_dir already exists. Use --force to reinstall it."
+            return
+        fi
+
+        rm -rf "$target_dir"
+    fi
+
+    rm -rf "$IOS_DIR/$extracted_name"
+
+    download_package "$package_url" "$package_file"
+    verify_package "$package_file" "$package_sha256"
+
+    unzip -q -d "$IOS_DIR" "$TMP_DIR/$package_file"
+    mv "$IOS_DIR/$extracted_name" "$target_dir"
+}
 
 # We might need to move packages into https://github.com/fheroes2/fheroes2-prebuilt-deps
 # repository as we did for other packages.
-PKG_NAME="release-2.32.10"
-PKG_FILE="$PKG_NAME.zip"
-PKG_FILE_SHA256="7a3c207b8509edc487d658df357ad764cd852d68fe248d307b25c0741d52fdf0"
-PKG_URL="https://github.com/libsdl-org/SDL/archive/refs/tags/$PKG_FILE"
+install_package \
+    "release-2.32.10" \
+    "release-2.32.10.zip" \
+    "7a3c207b8509edc487d658df357ad764cd852d68fe248d307b25c0741d52fdf0" \
+    "https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.32.10.zip" \
+    "SDL-release-2.32.10" \
+    "SDL2"
 
-TMP_DIR="$(mktemp -d)"
+install_package \
+    "release-2.8.1" \
+    "release-2.8.1.zip" \
+    "3738827df73c86268dfa52898780769d1a796316d73b535e2ab5ff2d8d0ff44f" \
+    "https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.1.zip" \
+    "SDL_mixer-release-2.8.1" \
+    "SDL2_mixer"
 
-if [[ -n "$(command -v wget)" ]]; then
-    wget -O "$TMP_DIR/$PKG_FILE" "$PKG_URL"
-elif [[ -n "$(command -v curl)" ]]; then
-    curl -o "$TMP_DIR/$PKG_FILE" -L "$PKG_URL"
-else
-    echo "Neither wget nor curl were found in your system. Unable to download the package archive. Installation aborted."
+# Patch SDL_mixer project.
+# It is needed since we are trying to build SDL_mixer using the latest SDL2 version.
+# Also, SDL_mixer doesn't support iPhone Simulator so we have to change this code or another one.
+SDL_MIXER_PROJECT="$IOS_DIR/SDL2_mixer/Xcode/SDL_mixer.xcodeproj/project.pbxproj"
+if [[ ! -f "$SDL_MIXER_PROJECT" ]]; then
+    echo "Missing SDL_mixer Xcode project: $SDL_MIXER_PROJECT"
     exit 1
 fi
 
-echo "$PKG_FILE_SHA256 *$PKG_FILE" > "$TMP_DIR/checksums"
-
-if [[ -n "$(command -v shasum)" ]]; then
-    (cd "$TMP_DIR" && shasum --check --algorithm 256 checksums)
-elif [[ -n "$(command -v sha256sum)" ]]; then
-    (cd "$TMP_DIR" && sha256sum --check --strict checksums)
-else
-    echo "Neither shasum nor sha256sum were found in your system. Unable to verify the downloaded file. Installation aborted."
-    exit 1
-fi
-
-unzip -d "$(dirname "$0")/../../ios" "$TMP_DIR/$PKG_FILE"
-
-mv "$(dirname "$0")/../../ios/SDL-$PKG_NAME" "$(dirname "$0")/../../ios/SDL2"
-
-PKG_NAME="release-2.8.1"
-PKG_FILE="$PKG_NAME.zip"
-PKG_FILE_SHA256="3738827df73c86268dfa52898780769d1a796316d73b535e2ab5ff2d8d0ff44f"
-PKG_URL="https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/$PKG_FILE"
-
-if [[ -n "$(command -v wget)" ]]; then
-    wget -O "$TMP_DIR/$PKG_FILE" "$PKG_URL"
-elif [[ -n "$(command -v curl)" ]]; then
-    curl -o "$TMP_DIR/$PKG_FILE" -L "$PKG_URL"
-else
-    echo "Neither wget nor curl were found in your system. Unable to download the package archive. Installation aborted."
-    exit 1
-fi
-
-echo "$PKG_FILE_SHA256 *$PKG_FILE" > "$TMP_DIR/checksums"
-
-unzip -d "$(dirname "$0")/../../ios" "$TMP_DIR/$PKG_FILE"
-
-mv "$(dirname "$0")/../../ios/SDL_Mixer-$PKG_NAME" "$(dirname "$0")/../../ios/SDL2_Mixer"
-
-# Patch SDL_Mixer project.
-# It is needed since we are trying to build SDL Mixer using the latest SDL2 version.
-# Also, SDL Mixer doesn't support iPhone Simulator so we have to change this code or another one.
-sed -i '' 's#$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers#$(SRCROOT)/../../SDL2/include#' \
-    ios/SDL2_Mixer/Xcode/SDL_mixer.xcodeproj/project.pbxproj
+sed -i '' 's#$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers#$(SRCROOT)/../../SDL2/include#' "$SDL_MIXER_PROJECT"

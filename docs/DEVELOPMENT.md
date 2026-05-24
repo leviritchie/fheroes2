@@ -49,6 +49,32 @@ you will be prompted to enable developer mode on your iOS device. Follow the ste
 * Once you have setup developer mode on your device and added your AppleID to Xcode, you can build and run the project. The first build will likely take a while.
 Once fheroes2 starts on your iOS device a white screen will show for a minute or more.
 
+#### Building an IPA for sideloading
+
+Run this from the repository root on macOS:
+
+```sh
+bash ./script/ios/build_ipa.sh
+```
+
+The script installs the iOS SDL dependencies if they are missing, prepares the required game-data directories, archives the app
+for a physical iOS device, and writes the IPA to `ios/build/fheroes2.ipa`. If `data` is missing, the script downloads and bundles
+the free Heroes II demo data by default. Set `FHEROES2_IOS_INCLUDE_DEMO_DATA=0` if you want the build to fail instead of
+downloading demo data, then copy your own Heroes II data into the repository root before running the script.
+
+By default the script creates an unsigned IPA that tools such as AltStore or Sideloadly can sign with your Apple ID during
+installation. To let Xcode sign during the archive step instead, pass your Apple development team ID:
+
+```sh
+FHEROES2_IOS_DEVELOPMENT_TEAM=YOURTEAMID bash ./script/ios/build_ipa.sh
+```
+
+You can override the bundle identifier with `FHEROES2_IOS_BUNDLE_IDENTIFIER`, for example:
+
+```sh
+FHEROES2_IOS_BUNDLE_IDENTIFIER=com.example.fheroes2 bash ./script/ios/build_ipa.sh
+```
+
 ### PlayStation Vita
 
 If you would like to build and run this project on PlayStation Vita please follow the instructions on [**this page**](README_PSV.md).
