@@ -3,10 +3,38 @@
    LastUpgradeVersion = "1600"
    version = "1.7">
    <BuildAction
-      parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES"
+      parallelizeBuildables = "NO"
+      buildImplicitDependencies = "NO"
       buildArchitectures = "Automatic">
       <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A7D88B5423E2437C00DCD162"
+               BuildableName = "SDL2.framework"
+               BlueprintName = "Framework-iOS"
+               ReferencedContainer = "container:SDL2/Xcode/SDL/SDL.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BE1FA90607AF96B2004B6283"
+               BuildableName = "SDL2_mixer.framework"
+               BlueprintName = "Framework"
+               ReferencedContainer = "container:SDL2_mixer/Xcode/SDL_mixer.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
