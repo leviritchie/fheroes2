@@ -119,3 +119,132 @@ if [[ ! -f "$SDL_MIXER_PROJECT" ]]; then
 fi
 
 sed -i '' 's#$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers#$(SRCROOT)/../../SDL2/include#' "$SDL_MIXER_PROJECT"
+
+# The upstream SDL_mixer Xcode target compiles music_timidity.c, but it does
+# not enable the Timidity MIDI backend or include the bundled Timidity sources.
+# fheroes2's bundled Heroes II music falls back to MIDI from HEROES2.AGG, so iOS
+# packages need this backend built into SDL2_mixer.framework.
+python3 - "$SDL_MIXER_PROJECT" <<'PY'
+import sys
+from pathlib import Path
+
+project_path = Path(sys.argv[1])
+text = project_path.read_text()
+
+def replace_once(content, old, new, description):
+    count = content.count(old)
+    if count != 1:
+        raise SystemExit(f"Expected one {description} anchor in {project_path}, found {count}.")
+    return content.replace(old, new, 1)
+
+def replace_first(content, old, new, description):
+    if old not in content:
+        raise SystemExit(f"Missing {description} anchor in {project_path}.")
+    return content.replace(old, new, 1)
+
+def ensure_one(content, target, anchor, insertion, description):
+    if content.count(target) == 1:
+        return content
+    if content.count(target) > 1:
+        raise SystemExit(f"Expected at most one {description} target in {project_path}, found {content.count(target)}.")
+    return replace_once(content, anchor, insertion, description)
+
+timidity_sources = [
+    ("A10000000000000000000001", "A20000000000000000000001", "A30000000000000000000001", "common.c"),
+    ("A10000000000000000000002", "A20000000000000000000002", "A30000000000000000000002", "instrum.c"),
+    ("A10000000000000000000003", "A20000000000000000000003", "A30000000000000000000003", "mix.c"),
+    ("A10000000000000000000004", "A20000000000000000000004", "A30000000000000000000004", "output.c"),
+    ("A10000000000000000000005", "A20000000000000000000005", "A30000000000000000000005", "playmidi.c"),
+    ("A10000000000000000000006", "A20000000000000000000006", "A30000000000000000000006", "readmidi.c"),
+    ("A10000000000000000000007", "A20000000000000000000007", "A30000000000000000000007", "resample.c"),
+    ("A10000000000000000000008", "A20000000000000000000008", "A30000000000000000000008", "tables.c"),
+    ("A10000000000000000000009", "A20000000000000000000009", "A30000000000000000000009", "timidity.c"),
+]
+
+macro_anchor = """\t\t\t\t\tMUSIC_WAV,
+\t\t\t\t\t"$(CONFIG_PREPROCESSOR_DEFINITIONS)","""
+macro_insertion = """\t\t\t\t\tMUSIC_WAV,
+\t\t\t\t\tMUSIC_MID,
+\t\t\t\t\tMUSIC_MID_TIMIDITY,
+\t\t\t\t\t"$(CONFIG_PREPROCESSOR_DEFINITIONS)","""
+patched_macros = """\t\t\t\tGCC_PREPROCESSOR_DEFINITIONS = (
+\t\t\t\t\tMUSIC_FLAC_DRFLAC,
+\t\t\t\t\tMUSIC_MP3_MINIMP3,
+\t\t\t\t\tMUSIC_OGG,
+\t\t\t\t\tOGG_USE_STB,
+\t\t\t\t\tMUSIC_WAV,
+\t\t\t\t\tMUSIC_MID,
+\t\t\t\t\tMUSIC_MID_TIMIDITY,
+\t\t\t\t\t"$(CONFIG_PREPROCESSOR_DEFINITIONS)",
+\t\t\t\t);"""
+
+while text.count(patched_macros) < 2:
+    text = replace_first(text, macro_anchor, macro_insertion, "unpatched SDL_mixer preprocessor block")
+if text.count(patched_macros) != 2:
+    raise SystemExit(f"Expected two patched SDL_mixer preprocessor blocks in {project_path}, found {text.count(patched_macros)}.")
+
+for framework_id, file_id, static_id, name in timidity_sources:
+    text = ensure_one(
+        text,
+        f"{framework_id} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {file_id} /* {name} */; }};",
+        "/* End PBXBuildFile section */",
+        f"\t\t{framework_id} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {file_id} /* {name} */; }};\n/* End PBXBuildFile section */",
+        f"Framework PBXBuildFile for {name}",
+    )
+    text = ensure_one(
+        text,
+        f"{static_id} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {file_id} /* {name} */; }};",
+        "/* End PBXBuildFile section */",
+        f"\t\t{static_id} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {file_id} /* {name} */; }};\n/* End PBXBuildFile section */",
+        f"Static Library PBXBuildFile for {name}",
+    )
+    text = ensure_one(
+        text,
+        f"{file_id} /* {name} */ = {{isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ../src/codecs/timidity/{name}; sourceTree = SOURCE_ROOT; }};",
+        "/* End PBXFileReference section */",
+        f"\t\t{file_id} /* {name} */ = {{isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ../src/codecs/timidity/{name}; sourceTree = SOURCE_ROOT; }};\n/* End PBXFileReference section */",
+        f"PBXFileReference for {name}",
+    )
+    text = ensure_one(
+        text,
+        f"\t\t\t\t{framework_id} /* {name} in Sources */,\n",
+        "\t\t\t\tAAE405FB1F9607C300EDAF53 /* music_timidity.c in Sources */,\n",
+        f"\t\t\t\tAAE405FB1F9607C300EDAF53 /* music_timidity.c in Sources */,\n\t\t\t\t{framework_id} /* {name} in Sources */,\n",
+        f"Framework source phase entry for {name}",
+    )
+    text = ensure_one(
+        text,
+        f"\t\t\t\t{static_id} /* {name} in Sources */,\n",
+        "\t\t\t\tF38233552731961A00F7F527 /* music_timidity.c in Sources */,\n",
+        f"\t\t\t\tF38233552731961A00F7F527 /* music_timidity.c in Sources */,\n\t\t\t\t{static_id} /* {name} in Sources */,\n",
+        f"Static Library source phase entry for {name}",
+    )
+
+missing_sources = []
+for framework_id, file_id, static_id, name in timidity_sources:
+    expected_entries = [
+        f"{framework_id} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {file_id} /* {name} */; }};",
+        f"{static_id} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {file_id} /* {name} */; }};",
+        f"{file_id} /* {name} */ = {{isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ../src/codecs/timidity/{name}; sourceTree = SOURCE_ROOT; }};",
+        f"\t\t\t\t{framework_id} /* {name} in Sources */,\n",
+        f"\t\t\t\t{static_id} /* {name} in Sources */,\n",
+    ]
+    if any(text.count(entry) != 1 for entry in expected_entries):
+        missing_sources.append(name)
+
+missing_tokens = [] if text.count(patched_macros) == 2 else ["MUSIC_MID/MUSIC_MID_TIMIDITY preprocessor blocks"]
+duplicate_sources = [
+    name
+    for _, file_id, _, name in timidity_sources
+    if text.count(f"{file_id} /* {name} */") != 3
+]
+if missing_tokens or missing_sources or duplicate_sources:
+    raise SystemExit(
+        "Failed to patch SDL_mixer Timidity MIDI support. "
+        f"Missing tokens: {', '.join(missing_tokens) or 'none'}; "
+        f"missing sources: {', '.join(missing_sources) or 'none'}; "
+        f"duplicate sources: {', '.join(duplicate_sources) or 'none'}."
+    )
+
+project_path.write_text(text)
+PY

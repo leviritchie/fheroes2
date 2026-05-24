@@ -79,10 +79,6 @@ require_macos() {
 }
 
 ensure_ios_dependencies() {
-    if [[ -d "$IOS_DIR/SDL2/Xcode/SDL/SDL.xcodeproj" && -d "$IOS_DIR/SDL2_mixer/Xcode/SDL_mixer.xcodeproj" ]]; then
-        return
-    fi
-
     "$SCRIPT_DIR/install_packages.sh"
 }
 
