@@ -185,6 +185,7 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
     configuration.playerCount = std::min<int32_t>( 6, configuration.playerCount );
 
     const int32_t originalWaterPercentageLimit{ Maps::Random_Generator::calculateMaximumWaterPercentage( configuration.playerCount, mapWidth ) };
+    int32_t currentWaterPercentageLimit = originalWaterPercentageLimit;
     configuration.waterPercentage = std::min( configuration.waterPercentage, originalWaterPercentageLimit );
 
     Display & display = Display::instance();
@@ -220,7 +221,7 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
     int32_t positionY = activeArea.y + 70;
 
     // Map configuration options.
-    text.set( _( "rmg|Player count" ), FontType::normalWhite() );
+    text.set( _( "rmg|Player count:" ), FontType::normalWhite() );
     text.draw( positionX + ( settingDescriptionWidth - text.width() ) / 2, positionY, display );
     HorizontalSlider playerCountSlider{ { inputPositionX, positionY }, 2, 6, configuration.playerCount };
     TextRestorer playerCountValue{ display, valuePositionX, positionY };
@@ -228,7 +229,7 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
 
     positionY += ySpacing;
 
-    text.set( _( "rmg|Map layout" ), FontType::normalWhite() );
+    text.set( _( "rmg|Map layout:" ), FontType::normalWhite() );
     text.draw( positionX + ( settingDescriptionWidth - text.width() ) / 2, positionY, display );
 
     // Dropdown with map layout selection.
@@ -255,16 +256,16 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
 
     positionY += ySpacing;
 
-    text.set( _( "rmg|Water percentage" ), FontType::normalWhite() );
+    text.set( _( "rmg|Water percentage:" ), FontType::normalWhite() );
     text.draw( positionX + ( settingDescriptionWidth - text.width() ) / 2, positionY, display );
 
     HorizontalSlider waterSlider{ { inputPositionX, positionY }, 0, originalWaterPercentageLimit, configuration.waterPercentage };
     TextRestorer waterValue{ display, valuePositionX, positionY };
-    waterValue.render( std::to_string( configuration.waterPercentage ), display );
+    waterValue.render( std::to_string( configuration.waterPercentage ) + '/' + std::to_string( currentWaterPercentageLimit ) + '%', display );
 
     positionY += ySpacing;
 
-    text.set( _( "rmg|Monster strength" ), FontType::normalWhite() );
+    text.set( _( "rmg|Monster strength:" ), FontType::normalWhite() );
     text.draw( positionX + ( settingDescriptionWidth - text.width() ) / 2, positionY, display );
     HorizontalSlider monsterSlider{ { inputPositionX, positionY }, 0, 3, static_cast<int>( configuration.monsterStrength ) };
     TextRestorer monsterValue{ display, valuePositionX, positionY };
@@ -272,7 +273,7 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
 
     positionY += ySpacing;
 
-    text.set( _( "rmg|Resource availability" ), FontType::normalWhite() );
+    text.set( _( "rmg|Resource availability:" ), FontType::normalWhite() );
     text.draw( positionX + ( settingDescriptionWidth - text.width() ) / 2, positionY, display );
     HorizontalSlider resourceSlider{ { inputPositionX, positionY }, 0, 2, static_cast<int>( configuration.resourceDensity ) };
     TextRestorer resourceValue{ display, valuePositionX, positionY };
@@ -280,7 +281,7 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
 
     positionY += ySpacing + 10;
 
-    text.set( _( "rmg|Map seed" ), FontType::normalWhite() );
+    text.set( _( "rmg|Map seed:" ), FontType::normalWhite() );
     text.draw( positionX + ( settingDescriptionWidth - text.width() ) / 2, positionY, display );
 
     ValueSelectionDialogElement mapSeedSelection{ 0, 999999, configuration.seed, 1, { positionX + settingDescriptionWidth + 4, positionY - 5 } };
@@ -321,14 +322,15 @@ bool fheroes2::randomMapGeneratorDialog( Maps::Random_Generator::Configuration &
             const int32_t newLimit = Maps::Random_Generator::calculateMaximumWaterPercentage( configuration.playerCount, mapWidth );
             configuration.waterPercentage = std::min( configuration.waterPercentage, newLimit );
             waterSlider.setRange( 0, newLimit );
+            currentWaterPercentageLimit = newLimit;
 
             playerCountValue.render( std::to_string( configuration.playerCount ), display );
-            waterValue.render( std::to_string( configuration.waterPercentage ), display );
+            waterValue.render( std::to_string( configuration.waterPercentage ) + '/' + std::to_string( currentWaterPercentageLimit ) + '%', display );
             display.render( window.activeArea() );
         }
         else if ( waterSlider.processEvents( le ) ) {
             configuration.waterPercentage = waterSlider.getCurrentValue();
-            waterValue.render( std::to_string( configuration.waterPercentage ), display );
+            waterValue.render( std::to_string( configuration.waterPercentage ) + '/' + std::to_string( currentWaterPercentageLimit ) + '%', display );
             display.render( window.activeArea() );
         }
         else if ( monsterSlider.processEvents( le ) ) {

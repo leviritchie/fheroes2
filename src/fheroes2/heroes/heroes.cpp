@@ -41,7 +41,9 @@
 #include "battle.h"
 #include "castle.h"
 #include "dialog.h"
+#include "difficulty.h"
 #include "direction.h"
+#include "game.h"
 #include "game_io.h"
 #include "game_static.h"
 #include "ground.h"
@@ -634,6 +636,9 @@ void Heroes::applyHeroMetadata( const Maps::Map_Format::HeroMetadata & heroMetad
         // Clear the initial spells and a possible spellBook.
         SpellBookDeactivate();
 
+        // Make sure that the Artifact Bag is empty.
+        GetBagArtifacts() = {};
+
         const size_t artifactCount = heroMetadata.artifact.size();
         assert( artifactCount == 14 );
         for ( size_t i = 0; i < artifactCount; ++i ) {
@@ -787,9 +792,16 @@ Maps::Map_Format::HeroMetadata Heroes::getHeroMetadata() const
     const std::vector<Skill::Secondary> & skills = _secondarySkills.ToVector();
     const size_t skillsSize = skills.size();
     assert( heroMetadata.secondarySkill.size() == skillsSize && heroMetadata.secondarySkillLevel.size() == skillsSize );
+
+    size_t skillId{ 0 };
     for ( size_t i = 0; i < skillsSize; ++i ) {
-        heroMetadata.secondarySkill[i] = static_cast<int8_t>( skills[i].Skill() );
-        heroMetadata.secondarySkillLevel[i] = static_cast<uint8_t>( skills[i].Level() );
+        if ( !skills[i].isValid() ) {
+            continue;
+        }
+
+        heroMetadata.secondarySkill[skillId] = static_cast<int8_t>( skills[i].Skill() );
+        heroMetadata.secondarySkillLevel[skillId] = static_cast<uint8_t>( skills[i].Level() );
+        ++skillId;
     }
 
     // Hero's name.
@@ -1107,6 +1119,7 @@ bool Heroes::Recruit( const PlayerColor col, const fheroes2::Point & pt )
     ResetModes( JAIL );
 
     SetColor( col );
+    setAlphaValue( 255 );
 
     SetCenter( pt );
     setDirection( Direction::RIGHT );
@@ -1298,7 +1311,7 @@ void Heroes::SetVisited( const int32_t tileIndex, const Visit::Type type /* = Vi
 
     // An object could be bigger than 1 tile so we need to check all its tiles.
     constexpr int32_t searchDist = []() constexpr {
-        constexpr int32_t max = std::max( Maps::maxActionObjectDimensions.width, Maps::maxActionObjectDimensions.height );
+        constexpr int32_t max = std::max( Maps::maxActionGroundObjectDimensions.width, Maps::maxActionGroundObjectDimensions.height );
         static_assert( max > 0 );
 
         return max - 1;
@@ -1340,7 +1353,7 @@ void Heroes::setVisitedForAllies( const int32_t tileIndex ) const
 
     // An object could be bigger than 1 tile so we need to check all its tiles.
     constexpr int32_t searchDist = []() constexpr {
-        constexpr int32_t max = std::max( Maps::maxActionObjectDimensions.width, Maps::maxActionObjectDimensions.height );
+        constexpr int32_t max = std::max( Maps::maxActionGroundObjectDimensions.width, Maps::maxActionGroundObjectDimensions.height );
         static_assert( max > 0 );
 
         return max - 1;
@@ -1456,6 +1469,10 @@ bool Heroes::PickupArtifact( const Artifact & art )
         if ( scout( assembledArtifact._assembledArtifactID ) ) {
             return true;
         }
+    }
+
+    if ( isControlAI() && Difficulty::isArtifactSortingAllowedForAI( Game::getDifficulty() ) ) {
+        GetBagArtifacts().sortFromWorstToBest();
     }
 
     return true;

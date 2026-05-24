@@ -51,6 +51,8 @@ namespace Game
         GLOBAL_TOGGLE_DEVELOPER_MODE,
 #endif
 
+        GLOBAL_APP_QUIT,
+
         MAIN_MENU_NEW_GAME,
         MAIN_MENU_LOAD_GAME,
         MAIN_MENU_HIGHSCORES,
@@ -59,7 +61,6 @@ namespace Game
         MAIN_MENU_CAMPAIGN,
         MAIN_MENU_MULTI,
         MAIN_MENU_SETTINGS,
-        MAIN_MENU_QUIT,
         MAIN_MENU_SELECT_MAP,
         MAIN_MENU_MAP_SIZE_SMALL,
         MAIN_MENU_MAP_SIZE_MEDIUM,
@@ -86,6 +87,7 @@ namespace Game
         // TODO: remove these hotkeys when the time is right.
         EDITOR_RANDOM_MAP_REGENERATE,
         EDITOR_RANDOM_MAP_RECONFIGURE,
+        EDITOR_OUTPUT_ALL_TEXT,
 #endif
 
         CAMPAIGN_ROLAND,
@@ -172,6 +174,8 @@ namespace Game
         // Also used to build a castle in the town.
         TOWN_CONSTRUCTION,
         TOWN_WELL_BUY_ALL,
+        TOWN_MERGE_TROOPS_WITH_HERO,
+        TOWN_MERGE_TROOPS_WITH_GARRISON,
 
         ARMY_SPLIT_STACK_BY_HALF,
         ARMY_SPLIT_STACK_BY_ONE,

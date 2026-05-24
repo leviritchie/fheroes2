@@ -1,5 +1,5 @@
 # Russian translation of fheroes2
-# Copyright (C) 2021 - 2025 fheroes2 team <fhomm2@gmail.com>
+# Copyright (C) 2021 - 2026 fheroes2 team <fhomm2@gmail.com>
 # Copyright (C) 2009 Igor Orlov <igororlov@inbox.ru>
 # Copyright (C) 2009 Andrey Afletdinov <afletdinov@gmail.com>
 # This file is distributed under the same license as the fheroes2 package.
@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fheroes2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-15 02:18+0000\n"
-"PO-Revision-Date: 2026-02-15 20:44+0300\n"
+"POT-Creation-Date: 2026-05-07 14:55+0000\n"
+"PO-Revision-Date: 2026-05-17 17:48+0300\n"
 "Last-Translator: fheroes2 team <fhomm2@gmail.com>\n"
 "Language-Team: <ru@li.org> <>\n"
 "Language: ru\n"
@@ -23,6 +23,9 @@ msgstr ""
 
 msgid "SELECT"
 msgstr "ВЫБОР"
+
+msgid "ABOUT"
+msgstr "О КАРТЕ"
 
 msgid "S"
 msgstr "М"
@@ -494,8 +497,8 @@ msgstr "Невозможно переместить последний отря�
 msgid "Move the %{name}"
 msgstr "Переместить %{name}"
 
-msgid "Set %{monster} Count"
-msgstr "%{monster}: введите количество"
+msgid "Set %{monster} Count:"
+msgstr "%{monster}. Введите количество:"
 
 msgid "%{name} destroys half the enemy troops!"
 msgid_plural "%{name} destroy half the enemy troops!"
@@ -542,10 +545,10 @@ msgstr ""
 "Ров прерывает любое передвижение через него и уменьшает на -%{count} навык "
 "обороны любого находящегося в нём отряда."
 
-msgid "Speed: %{speed}"
+msgid "battleAnimation|Speed: %{speed}"
 msgstr "Скорость: %{speed}"
 
-msgid "Speed"
+msgid "battleAnimation|Speed"
 msgstr "Скорость"
 
 msgid "Interface"
@@ -1071,6 +1074,12 @@ msgstr "Погибнет: %{max}"
 msgid "Perish: %{min} - %{max}"
 msgstr "Погибнет: %{min} - %{max}"
 
+msgid "battle_turn_order|Top"
+msgstr "Сверху"
+
+msgid "battle_turn_order|Bottom"
+msgstr "Снизу"
+
 msgid "Turn Order"
 msgstr "Порядок действий"
 
@@ -1114,7 +1123,7 @@ msgid ""
 msgstr ""
 "Включить/выключить отрисовку тени под курсором на гексагональной сетке."
 
-msgid "Toggle showing the movement area of a highlighted creature on or off ."
+msgid "Toggle showing the movement area of a highlighted creature on or off."
 msgstr ""
 "Включить/выключить отображение области передвижения существа под курсором."
 
@@ -1127,11 +1136,11 @@ msgstr ""
 msgid "Human"
 msgstr "Человек"
 
-msgid "AI"
-msgstr "Компьютер"
-
 msgid "Terrain"
 msgstr "Местность"
+
+msgid "Battle Only"
+msgstr "Дуэль"
 
 msgid "Start"
 msgstr "Начать"
@@ -1165,11 +1174,17 @@ msgstr ""
 msgid "Please select another hero."
 msgstr "Пожалуйста, выберите другого героя."
 
-msgid "Click to set this hero to be human-controlled."
-msgstr "Нажмите, чтобы данным героем управлял человек."
+msgid "Click to select a hero."
+msgstr "Нажмите, чтобы выбрать героя."
 
-msgid "Click to set this hero to be AI-controlled."
-msgstr "Нажмите, чтобы данным героем управлял ИИ."
+msgid "Hero"
+msgstr "Герой"
+
+msgid ""
+"If this checkbox is checked, the defending hero is going be human-controlled."
+msgstr ""
+"Если данный флажок установлен, то защищающийся герой будет под управлением "
+"человека."
 
 msgid "%{race1} %{name1} vs %{race2} %{name2}"
 msgstr "%{race1} %{name1} против %{race2} %{name2}"
@@ -2939,6 +2954,9 @@ msgstr "Урон"
 msgid "HP"
 msgstr "Здоровье"
 
+msgid "Speed"
+msgstr "Скорость"
+
 msgid "Growth"
 msgstr "Прирост"
 
@@ -3233,6 +3251,12 @@ msgid ""
 msgstr ""
 "Условия\n"
 "поражения"
+
+msgid "About"
+msgstr "О карте"
+
+msgid "Click to read notes from the map creator."
+msgstr "Нажмите для отображения примечаний создателя карты."
 
 msgid "Map Description"
 msgstr "Описание карты"
@@ -3548,23 +3572,23 @@ msgstr "Неизведанная территория"
 msgid "Random Map Generator"
 msgstr "Генератор случайных карт"
 
-msgid "rmg|Player count"
-msgstr "Количество игроков"
+msgid "rmg|Player count:"
+msgstr "Количество игроков:"
 
-msgid "rmg|Map layout"
-msgstr "Вид карты"
+msgid "rmg|Map layout:"
+msgstr "Вид карты:"
 
-msgid "rmg|Water percentage"
-msgstr "Процент воды на карте"
+msgid "rmg|Water percentage:"
+msgstr "Процент воды на карте:"
 
-msgid "rmg|Monster strength"
-msgstr "Сила монстров"
+msgid "rmg|Monster strength:"
+msgstr "Сила монстров:"
 
-msgid "rmg|Resource availability"
-msgstr "Доступность ресурсов"
+msgid "rmg|Resource availability:"
+msgstr "Доступность ресурсов:"
 
-msgid "rmg|Map seed"
-msgstr "\"Сид\" карты"
+msgid "rmg|Map seed:"
+msgstr "\"Сид\" карты:"
 
 msgid "Click to generate a new map."
 msgstr "Нажмите, чтобы сгенерировать новую карту."
@@ -3764,6 +3788,9 @@ msgstr "Выберите героя:"
 msgid "Select Monsters:"
 msgstr "Выберите существ:"
 
+msgid "Select Artifacts:"
+msgstr "Выберите артефакты:"
+
 msgid "race|Random"
 msgstr "Случайно"
 
@@ -3788,8 +3815,8 @@ msgstr "Выберите сокровище:"
 msgid "Select Ocean Object:"
 msgstr "Выберите объект для океана:"
 
-msgid "Castle/town placing"
-msgstr "Размещение замка или города"
+msgid "Castle/town placing:"
+msgstr "Размещение замка или города:"
 
 msgid "doubleLinedRace|Neutral"
 msgstr "Нейтральный"
@@ -3821,8 +3848,8 @@ msgstr "Выберите жилище:"
 msgid "Select Landscape Object:"
 msgstr "Выберите объект ландшафта:"
 
-msgid "Mine placing"
-msgstr "Размещение источника ресурсов"
+msgid "Mine placing:"
+msgstr "Размещение источника ресурсов:"
 
 msgid ""
 "Resource\n"
@@ -3855,8 +3882,8 @@ msgstr "Выберите объект типа бонус:"
 msgid "Select Adventure Object:"
 msgstr "Выберите интерактивный объект:"
 
-msgid "Select color"
-msgstr "Выберите цвет"
+msgid "Select color:"
+msgstr "Выберите цвет:"
 
 msgid "Players Icon"
 msgstr "Значок игроков"
@@ -4136,10 +4163,10 @@ msgid "BANNED SPELLS"
 msgstr "ЗАПРЕТИТЬ"
 
 msgid "Click to accept the changes made."
-msgstr "Нажмите, чтобы применить внесённые изменения."
+msgstr "Нажмите, чтобы применить изменения."
 
 msgid "Exit this dialog, discarding the changes made."
-msgstr "Выход из данного диалогового окна с отменой внесённых изменений."
+msgstr "Выход из данного диалогового окна с отменой изменений."
 
 msgid "Click to ban spells from appearing in the Mage Guild."
 msgstr ""
@@ -4172,11 +4199,14 @@ msgstr "Армия замка"
 msgid "Town Army"
 msgstr "Армия города"
 
+msgid "You have unsaved changes. Do you wish to proceed?"
+msgstr "У Вас есть несохранённые изменения. Вы желаете продолжить?"
+
 msgid "Click to change the Castle name."
 msgstr "Нажмите, чтобы изменить название замка."
 
-msgid "Enter Castle name"
-msgstr "Введите название замка"
+msgid "Enter Castle name:"
+msgstr "Введите название замка:"
 
 msgid "Reset the Castle name."
 msgstr "Сбросить название замка."
@@ -4249,6 +4279,9 @@ msgstr ""
 "Если этот флажок установлен, то это событие произойдёт для компьютерного "
 "игрока, если его цвет %{color}."
 
+msgid "Set %{resource-type} Count:"
+msgstr "%{resource-type}. Введите количество:"
+
 msgid "Message:"
 msgstr "Сообщение:"
 
@@ -4273,8 +4306,8 @@ msgstr "Сообщение при событии"
 msgid "Day: %{day}"
 msgstr "День: %{day}"
 
-msgid "Daily Events"
-msgstr "Календарные события"
+msgid "Daily events:"
+msgstr "Календарные события:"
 
 msgid "Click to save the events."
 msgstr "Нажмите, чтобы сохранить события."
@@ -4309,8 +4342,8 @@ msgstr "Отменить после посещения"
 msgid "Computer colors allowed to get the event:"
 msgstr "Событие происходит для следующих компьютерных игроков:"
 
-msgid "Set Experience value"
-msgstr "Введите величину опыта"
+msgid "Set Experience value:"
+msgstr "Введите величину опыта:"
 
 msgid "Artifact"
 msgstr "Артефакт"
@@ -4368,11 +4401,12 @@ msgstr ""
 msgid "%{objects} must be placed on water."
 msgstr "%{objects} можно размещать только на воде."
 
-msgid "Objects cannot be placed outside the map."
-msgstr "Объекты нельзя размещать за пределами карты."
+msgid "Action objects cannot be placed outside the map."
+msgstr "Интерактивные объекты нельзя размещать за пределами карты."
 
 msgid "Action objects must be placed on clear tiles."
-msgstr "Активные объекты можно размещать только в свободных клетках карты."
+msgstr ""
+"Интерактивные объекты можно размещать только в свободных клетках карты."
 
 msgid "A maximum of %{count} %{objects} can be placed on the map."
 msgstr ""
@@ -4477,11 +4511,11 @@ msgid "Leave the Editor and play the map in the Standard Game mode."
 msgstr ""
 "Выйти из редактора и начать игру на текущей карте в режиме \"обычная игра\"."
 
-msgid "Input %{object} text"
-msgstr "%{object}: введите текст"
+msgid "Input %{object} text:"
+msgstr "%{object}. Введите текст:"
 
-msgid "Set Random Ultimate Artifact Radius"
-msgstr "Установить радиус появления великого артефакта"
+msgid "Set Random Ultimate Artifact Radius:"
+msgstr "Установить радиус появления великого артефакта:"
 
 msgid "%{object} has no properties to change."
 msgstr "%{object}: нет свойств, которые можно было бы изменить."
@@ -4519,6 +4553,9 @@ msgstr "На одной карте можно разместить только 
 
 msgid "A maximum of %{count} obelisks can be placed on the map."
 msgstr "На карте можно разместить не более %{count} обелисков."
+
+msgid "The same object exists on the tile."
+msgstr "Такой объект уже есть на этой клетке."
 
 msgid "The map is corrupted."
 msgstr "Карта повреждена."
@@ -4563,13 +4600,6 @@ msgstr ""
 "чтобы выбрать\n"
 "другое существо."
 
-msgid ""
-"Cell\n"
-"Details"
-msgstr ""
-"Детали\n"
-"объекта"
-
 msgid "Erase"
 msgstr "Ластик"
 
@@ -4609,8 +4639,26 @@ msgstr "Герои"
 msgid "Towns"
 msgstr "Города"
 
-msgid "editorErasure|Landscape objects"
-msgstr "Объекты ландшафта"
+msgid "editorDetailMode|Edit"
+msgstr "Редактировать"
+
+msgid "editorDetailMode|Move"
+msgstr "Переместить"
+
+msgid "editorDetailMode|Copy"
+msgstr "Копировать"
+
+msgid "editorErasure|Mountains"
+msgstr "Горы"
+
+msgid "editorErasure|Rocks"
+msgstr "Камни"
+
+msgid "editorErasure|Trees"
+msgstr "Деревья"
+
+msgid "editorErasure|Miscellaneous and Water landscape objects"
+msgstr "Объекты воды и прочие объекты"
 
 msgid "editorErasure|Adventure non pickable objects"
 msgstr "Статические интерактивные объекты"
@@ -4677,6 +4725,15 @@ msgstr "Передвижение возможно только на корабл
 msgid "No special modifiers."
 msgstr "Нет особых модификаторов."
 
+msgid "Edit objects on the Adventure Map."
+msgstr "Редактировать параметры объектов на карте приключений."
+
+msgid "Move objects on the Adventure Map."
+msgstr "Переместить объекты на карте приключений."
+
+msgid "Copy objects on the Adventure Map."
+msgstr "Копировать объекты на карте приключений."
+
 msgid "Toggle the erasure of %{type} objects."
 msgstr "Удаление объектов типа: %{type}."
 
@@ -4717,8 +4774,10 @@ msgstr ""
 msgid "Detail Mode"
 msgstr "Характеристики"
 
-msgid "Used for special editing of action objects."
-msgstr "Используется для изменения специальных параметров активных объектов."
+msgid "Used for moving or customizing objects."
+msgstr ""
+"Используется для перемещения, копирования и редактирования параметров "
+"объектов."
 
 msgid "Adventure Objects Mode"
 msgstr "Режим размещения интерактивных объектов"
@@ -4799,8 +4858,8 @@ msgstr ""
 msgid "View the editor system options, which let you customize the editor."
 msgstr "Открывает окно системных настроек редактора карт."
 
-msgid "Supported languages"
-msgstr "Поддерживаемые языки"
+msgid "Supported languages:"
+msgstr "Поддерживаемые языки:"
 
 msgid "Language"
 msgstr "Язык"
@@ -4990,16 +5049,16 @@ msgstr "СОБЫТИЯ"
 msgid "LANGUAGE"
 msgstr "ЯЗЫК"
 
-msgid "ABOUT"
+msgid "map|ABOUT"
 msgstr "О КАРТЕ"
 
-msgid "Change Map Name"
-msgstr "Изменить название карты"
+msgid "Change Map Name:"
+msgstr "Изменить название карты:"
 
-msgid "Change Map Description"
-msgstr "Изменить описание карты"
+msgid "Change Map Description:"
+msgstr "Изменить описание карты:"
 
-msgid "About"
+msgid "map|About"
 msgstr "О карте"
 
 msgid "Click to edit custom rumors."
@@ -5076,6 +5135,9 @@ msgstr "Включить или выключить анимацию объект
 
 msgid "Toggle display of objects' passability."
 msgstr "Включить или выключить отображение проходимости объектов."
+
+msgid "Rumors:"
+msgstr "Слухи:"
 
 msgid "Rumor:"
 msgstr "Слух:"
@@ -5366,8 +5428,8 @@ msgstr "Разработка и поддержка"
 msgid "Special Thanks to"
 msgstr "Особая благодарность"
 
-msgid "and many-many other contributors and supporters!"
-msgstr "и многим другим, кто участвует в развитии и поддерживает проект!"
+msgid "and all the people who have helped make the project possible!"
+msgstr "и всем тем, кто помог воплотить этот проект в жизнь!"
 
 msgid "Support us at"
 msgstr "Поддержите нас"
@@ -5505,6 +5567,13 @@ msgstr "Разработка карт"
 msgid "Package Design"
 msgstr "Дизайн упаковки"
 
+msgid "To exit fheroes2, press the Home button or swipe up."
+msgstr ""
+"Для выхода из fheroes2, нажмите кнопку \"Домой\" или проведите пальцем вверх."
+
+msgid "Are you sure you want to quit?"
+msgstr "Вы уверены, что хотите выйти?"
+
 msgid "High Scores"
 msgstr "Рейтинги"
 
@@ -5553,6 +5622,9 @@ msgstr "текстовое сопровождение (вкл./выкл.)"
 msgid "hotkey|toggle developer mode"
 msgstr "режим разработки (вкл./выкл.)"
 
+msgid "hotkey|quit"
+msgstr "выйти из игры"
+
 msgid "hotkey|new game"
 msgstr "новая игра"
 
@@ -5576,9 +5648,6 @@ msgstr "многопользовательская игра"
 
 msgid "hotkey|settings"
 msgstr "настройки"
-
-msgid "hotkey|quit"
-msgstr "выйти из игры"
 
 msgid "hotkey|select map"
 msgstr "выбрать карту"
@@ -5642,6 +5711,9 @@ msgstr "заново генерировать случайную карту"
 
 msgid "hotkey|re-configure random map"
 msgstr "изменить параметры случайной карты"
+
+msgid "hotkey|output all text"
+msgstr "вывод всех текстов карты в консоль"
 
 msgid "hotkey|roland campaign"
 msgstr "кампания за роланда"
@@ -5861,6 +5933,12 @@ msgstr "экран строительства замка"
 msgid "hotkey|buy all monsters in well"
 msgstr "купить всех существ в колодце"
 
+msgid "hotkey|merge troops with hero"
+msgstr "объединить войска с героем"
+
+msgid "hotkey|merge troops with garrison"
+msgstr "объединить войска с гарнизоном"
+
 msgid "hotkey|split stack by half"
 msgstr "разделить отряд пополам"
 
@@ -6057,9 +6135,6 @@ msgid ""
 msgstr ""
 "Многопользовательская игра, в которой несколько игроков-людей соперничают на "
 "одой карте."
-
-msgid "Battle Only"
-msgstr "Дуэль"
 
 msgid "Setup and play a battle without loading any map."
 msgstr "Настройте и играйте в битву без загрузки карты."
@@ -6544,13 +6619,6 @@ msgstr ""
 "Некоторые Ваши герои ещё могут ходить.\n"
 "Вы действительно хотите закончить ход?"
 
-msgid "To exit fheroes2, press the Home button or swipe up."
-msgstr ""
-"Для выхода из fheroes2, нажмите кнопку \"Домой\" или проведите пальцем вверх."
-
-msgid "Are you sure you want to quit?"
-msgstr "Вы уверены, что хотите выйти?"
-
 msgid "Are you sure you want to restart? (Your current game will be lost.)"
 msgstr "Вы действительно хотите начать сначала? (Текущая игра будет потеряна.)"
 
@@ -6696,8 +6764,8 @@ msgstr ""
 "по умол-\n"
 "чанию"
 
-msgid "Set %{skill} Skill"
-msgstr "%{skill}: введите уровень"
+msgid "Set %{skill} Skill:"
+msgstr "%{skill}. Введите уровень:"
 
 msgid "Set %{skill} base value. Right-click to reset all skills to default."
 msgstr "%{skill}: ввести базовое значение. Правый клик - сбросить."
@@ -6717,14 +6785,51 @@ msgstr ""
 msgid "The available values range from %{min} to %{max}."
 msgstr "Доступны значения в диапазоне с %{min} по %{max}."
 
+msgid "Uppercase"
+msgstr "Прописные"
+
+msgid "Click to switch to uppercase letters."
+msgstr "Нажмите для включения ввода прописных букв."
+
 msgid "Keyboard|123"
 msgstr "123"
+
+msgid "Keyboard type"
+msgstr "Тип клавиатуры"
+
+msgid "Click to switch between keyboard types."
+msgstr "Нажмите для смены типа клавиатуры."
 
 msgid "Keyboard|SPACE"
 msgstr "ПРОБЕЛ"
 
+msgid "Change language"
+msgstr "Сменить язык"
+
+msgid "Click to switch between languages."
+msgstr "Нажмите для смены языка."
+
+msgid "Backspace"
+msgstr "Backspace"
+
+msgid "Click to remove characters."
+msgstr "Нажмите, чтобы удалить символы слева от курсора."
+
+msgid "Lowercase"
+msgstr "Строчные"
+
+msgid "Click to switch to lowercase letters."
+msgstr "Нажмите для включения ввода строчных букв."
+
 msgid "Keyboard|ABC"
 msgstr "АБВ"
+
+msgid "Swap sign"
+msgstr "Сменить знак"
+
+msgid "Click to switch between signed and unsigned numbers."
+msgstr ""
+"Нажмите для переключения между положительными и отрицательными числами."
 
 msgid "The entered value is invalid."
 msgstr "Введено некорректное значение."
@@ -6812,6 +6917,9 @@ msgstr "Вьетнамский"
 
 msgid "Greek"
 msgstr "Греческий"
+
+msgid "Esperanto"
+msgstr "Эсперанто"
 
 msgid "Slow"
 msgstr "Медленная"
@@ -8424,13 +8532,13 @@ msgstr "Только герои могут колдовать данное за�
 msgid "This hero is not able to cast adventure spells."
 msgstr "Ваш герой не может использовать заклинания на карте."
 
+msgid "This spell cannot be cast on a boat."
+msgstr "Это заклинание не действует в море."
+
 msgid "Your hero is too tired to cast this spell today. Try again tomorrow."
 msgstr ""
 "Ваш герой очень устал, и не сможет применять магию сегодня. Попробуйте ещё "
 "раз завтра."
-
-msgid "This spell cannot be cast on a boat."
-msgstr "Это заклинание не действует в море."
 
 msgid "This spell can only be cast near an ocean."
 msgstr "Это заклинание действует только у воды."
@@ -8541,17 +8649,17 @@ msgstr "Установить величину очков магии. Сейча�
 msgid "Change Spell Points value. Right-click to reset to default value."
 msgstr "Изменить величину очков магии. Правый клик - сбросить."
 
-msgid "Set Spell Points value"
-msgstr "Введите величину очков магии"
+msgid "Set Spell Points value:"
+msgstr "Введите величину очков магии:"
 
 msgid "View Spell Points Info"
 msgstr "Очки магии"
 
-msgid "Set patrol radius in tiles"
-msgstr "Введите радиус патрулирования в клетках"
+msgid "Set patrol radius in tiles:"
+msgstr "Введите радиус патрулирования в клетках:"
 
-msgid "Enter hero's name"
-msgstr "Введите имя героя"
+msgid "Enter hero's name:"
+msgstr "Введите имя героя:"
 
 msgid "Click to change class."
 msgstr "Нажмите, чтобы изменить фракцию."
@@ -8615,6 +8723,9 @@ msgstr ""
 
 msgid "Click to enable hero's patrol mode."
 msgstr "Нажмите, чтобы установить героя в режим патруля."
+
+msgid "Do you want to save the changes made?"
+msgstr "Вы желаете сохранить изменения?"
 
 msgid "Blood Morale"
 msgstr "В Бой!"
@@ -9177,21 +9288,21 @@ msgid "luck|Irish"
 msgstr "Фортуна!"
 
 msgid ""
-"Negative luck sometimes falls on the hero's units in combat, causing their "
-"attacks to only do half damage."
+"%{luck-type} luck sometimes falls on the hero's units in combat, causing "
+"their attacks to only do half damage."
 msgstr ""
 "Отрицательная удача иногда посещает войска героя в бою, неудача вынуждает "
 "отряд атаковать только вполсилы."
 
 msgid ""
-"Neutral luck means the hero's units will never get lucky or unlucky attacks "
-"on the enemy."
+"%{luck-type} luck means the hero's units will never get lucky or unlucky "
+"attacks on the enemy."
 msgstr ""
 "Нормальная удача подразумевает, что войска героя не будут проводить как "
 "удачные, так и неудачные атаки."
 
 msgid ""
-"Positive luck sometimes lets the hero's units get lucky attacks (double "
+"%{luck-type} luck sometimes lets the hero's units get lucky attacks (double "
 "strength) in combat."
 msgstr ""
 "Положительная удача иногда позволяет отрядам героя проводить удачные атаки в "
@@ -9218,21 +9329,25 @@ msgstr "Отличная"
 msgid "morale|Blood!"
 msgstr "Эйфория!"
 
-msgid "Negative morale may cause the hero's units to freeze in combat."
+msgid "%{morale-type} morale may cause the hero's units to freeze in combat."
 msgstr ""
 "Отрицательная мораль может заставить отряд героя застыть на месте от ужаса."
 
 msgid ""
-"Neutral morale means the hero's units will never be blessed with extra "
-"attacks or freeze in combat."
+"%{morale-type} morale means the hero's units will never be blessed with "
+"extra attacks or freeze in combat."
 msgstr ""
 "Обычная мораль подразумевает, что отряды героя не будут поощряться "
 "дополнительной атакой или пропускать ход."
 
-msgid "Positive morale may give the hero's units extra attacks in combat."
+msgid ""
+"%{morale-type} morale may give the hero's units extra attacks in combat."
 msgstr ""
 "Положительная мораль может дать войскам героя возможность дополнительной "
 "атаки в сражении."
+
+msgid "Blood"
+msgstr "'В Бой'"
 
 msgid "Knight"
 msgstr "Рыцарь"
@@ -9667,9 +9782,6 @@ msgstr "Случайное сильное существо"
 
 msgid "Random Monster - very strong"
 msgstr "Случайное великое существо"
-
-msgid "Hero"
-msgstr "Герой"
 
 msgid "Nothing Special"
 msgstr "Ничего особенного"
