@@ -673,16 +673,31 @@ const std::vector<std::string> & Settings::GetRootDirs()
         result.emplace_back( EXPANDDEF( FHEROES2_DATA ) );
 #endif
 
-#if defined( __IPHONEOS__ )
-        // IOS application should have all resources within the application folder.
-        result.emplace_back( "." );
-#endif
-
         // Environment variable.
         const char * dataEnvPath = getenv( "FHEROES2_DATA" );
         if ( dataEnvPath != nullptr && std::find( result.begin(), result.end(), dataEnvPath ) == result.end() ) {
             result.emplace_back( dataEnvPath );
         }
+
+#if defined( __IPHONEOS__ )
+        // Prefer user-imported resources over the bundled demo data. iOS file
+        // sharing exposes Documents, while fheroes2 saves generated data under
+        // Library/Application Support.
+        if ( const char * homeEnv = getenv( "HOME" ); homeEnv != nullptr ) {
+            const std::string documentsPath = System::concatPath( homeEnv, "Documents" );
+            const std::string documentsAppPath = System::concatPath( documentsPath, "fheroes2" );
+
+            if ( std::find( result.begin(), result.end(), documentsAppPath ) == result.end() ) {
+                result.emplace_back( documentsAppPath );
+            }
+            if ( std::find( result.begin(), result.end(), documentsPath ) == result.end() ) {
+                result.emplace_back( documentsPath );
+            }
+        }
+
+        // The public IPA can still bundle the demo resources in the app folder.
+        result.emplace_back( "." );
+#endif
 
         // The location of the application.
         std::string appPath = System::GetParentDirectory( Settings::Get()._programPath );
