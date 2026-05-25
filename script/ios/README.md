@@ -55,4 +55,4 @@ name = Random map
 `resource density` accepts `scarce`, `normal`, or `abundant`; `monster strength` accepts `weak`, `normal`, `strong`, or
 `deadly`. `seed = 0` means a random seed. On success, generated `.fh2m` files are saved under `maps/`, and `rmg.cfg` is
 deleted so the request does not repeat on every launch. Invalid values fail closed and leave `rmg.cfg` in place for
-correction.
+correction. Each attempt writes `rmg-status.txt` next to `rmg.cfg` with the success or failure reason.

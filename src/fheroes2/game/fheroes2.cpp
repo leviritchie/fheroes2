@@ -311,10 +311,22 @@ namespace
         return {};
     }
 
-    bool getRMGInteger( const TinyConfig & config, const std::string & key, const int32_t minValue, const int32_t maxValue, int32_t & value )
+    void writeRMGStatus( const std::string & rmgDir, const std::string & message )
+    {
+        if ( rmgDir.empty() ) {
+            return;
+        }
+
+        std::ofstream statusFile( System::concatPath( rmgDir, "rmg-status.txt" ) );
+        if ( statusFile ) {
+            statusFile << message << '\n';
+        }
+    }
+
+    bool getRMGInteger( const TinyConfig & config, const std::string & key, const int32_t minValue, const int32_t maxValue, int32_t & value, std::string & error )
     {
         if ( !config.Exists( key ) ) {
-            ERROR_LOG( "Missing random map generator setting: " << key )
+            error = "Missing random map generator setting: " + key;
             return false;
         }
 
@@ -325,12 +337,13 @@ namespace
         int32_t parsedValue{ 0 };
         const auto [ptr, ec] = std::from_chars( first, last, parsedValue );
         if ( ptr != last || ec != std::errc() ) {
-            ERROR_LOG( "Invalid random map generator integer setting '" << key << "': " << text )
+            error = "Invalid random map generator integer setting '" + key + "': " + text;
             return false;
         }
 
         if ( parsedValue < minValue || parsedValue > maxValue ) {
-            ERROR_LOG( "Random map generator setting '" << key << "' is out of range: " << parsedValue << " (" << minValue << '-' << maxValue << ')' )
+            error = "Random map generator setting '" + key + "' is out of range: " + std::to_string( parsedValue ) + " (" + std::to_string( minValue ) + '-'
+                    + std::to_string( maxValue ) + ')';
             return false;
         }
 
@@ -338,10 +351,10 @@ namespace
         return true;
     }
 
-    bool getRMGMapSize( const TinyConfig & config, int32_t & mapSize )
+    bool getRMGMapSize( const TinyConfig & config, int32_t & mapSize, std::string & error )
     {
         if ( !config.Exists( "size" ) ) {
-            ERROR_LOG( "Missing random map generator setting: size" )
+            error = "Missing random map generator setting: size";
             return false;
         }
 
@@ -364,7 +377,7 @@ namespace
         }
 
         int32_t numericSize{ 0 };
-        if ( !getRMGInteger( config, "size", Maps::SMALL, Maps::XLARGE, numericSize ) ) {
+        if ( !getRMGInteger( config, "size", Maps::SMALL, Maps::XLARGE, numericSize, error ) ) {
             return false;
         }
 
@@ -373,14 +386,14 @@ namespace
             return true;
         }
 
-        ERROR_LOG( "Unsupported random map generator map size: " << numericSize )
+        error = "Unsupported random map generator map size: " + std::to_string( numericSize );
         return false;
     }
 
-    bool getRMGResourceDensity( const TinyConfig & config, Maps::Random_Generator::ResourceDensity & resourceDensity )
+    bool getRMGResourceDensity( const TinyConfig & config, Maps::Random_Generator::ResourceDensity & resourceDensity, std::string & error )
     {
         if ( !config.Exists( "resource density" ) ) {
-            ERROR_LOG( "Missing random map generator setting: resource density" )
+            error = "Missing random map generator setting: resource density";
             return false;
         }
 
@@ -398,14 +411,14 @@ namespace
             return true;
         }
 
-        ERROR_LOG( "Invalid random map generator resource density: " << config.StrParams( "resource density" ) )
+        error = "Invalid random map generator resource density: " + config.StrParams( "resource density" );
         return false;
     }
 
-    bool getRMGMonsterStrength( const TinyConfig & config, Maps::Random_Generator::MonsterStrength & monsterStrength )
+    bool getRMGMonsterStrength( const TinyConfig & config, Maps::Random_Generator::MonsterStrength & monsterStrength, std::string & error )
     {
         if ( !config.Exists( "monster strength" ) ) {
-            ERROR_LOG( "Missing random map generator setting: monster strength" )
+            error = "Missing random map generator setting: monster strength";
             return false;
         }
 
@@ -427,7 +440,7 @@ namespace
             return true;
         }
 
-        ERROR_LOG( "Invalid random map generator monster strength: " << config.StrParams( "monster strength" ) )
+        error = "Invalid random map generator monster strength: " + config.StrParams( "monster strength" );
         return false;
     }
 
@@ -455,16 +468,16 @@ namespace
         return fileName;
     }
 
-    bool getRMGMapName( const TinyConfig & config, std::string & mapName )
+    bool getRMGMapName( const TinyConfig & config, std::string & mapName, std::string & error )
     {
         if ( !config.Exists( "name" ) ) {
-            ERROR_LOG( "Missing random map generator setting: name" )
+            error = "Missing random map generator setting: name";
             return false;
         }
 
         mapName = sanitizeRMGFileName( config.StrParams( "name" ) );
         if ( mapName.empty() ) {
-            ERROR_LOG( "Random map generator setting 'name' must not be empty." )
+            error = "Random map generator setting 'name' must not be empty.";
             return false;
         }
 
@@ -522,68 +535,97 @@ namespace
 
         TinyConfig config( '=', '#' );
         if ( !config.Load( requestPath ) ) {
-            ERROR_LOG( "Unable to read random map generator request: " << requestPath )
+            const std::string message = "Unable to read random map generator request: " + requestPath;
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
             return;
         }
 
         const std::string enabled = normalizeRMGConfigValue( config.StrParams( "enabled" ) );
         if ( enabled.empty() ) {
-            ERROR_LOG( "Missing random map generator setting: enabled" )
+            const std::string message = "Missing random map generator setting: enabled";
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
             return;
         }
         if ( enabled == "off" ) {
             return;
         }
         if ( enabled != "on" ) {
-            ERROR_LOG( "Invalid random map generator enabled setting: " << config.StrParams( "enabled" ) )
+            const std::string message = "Invalid random map generator enabled setting: " + config.StrParams( "enabled" );
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
             return;
         }
 
         if ( !Settings::Get().isPriceOfLoyaltySupported() ) {
-            ERROR_LOG( "Random map generation requires Price of Loyalty data. Import HEROES2X.AGG next to HEROES2.AGG before using rmg.cfg." )
+            const std::string message = "Random map generation requires Price of Loyalty data. Import HEROES2X.AGG next to HEROES2.AGG before using rmg.cfg.";
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
             return;
         }
 
+        std::string error;
         int32_t mapSize{ 0 };
-        if ( !getRMGMapSize( config, mapSize ) ) {
+        if ( !getRMGMapSize( config, mapSize, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
 
         Maps::Random_Generator::Configuration rmgConfig;
-        if ( !getRMGInteger( config, "players", 2, 6, rmgConfig.playerCount ) ) {
+        if ( !getRMGInteger( config, "players", 2, 6, rmgConfig.playerCount, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
         if ( !getRMGInteger( config, "water", 0, Maps::Random_Generator::calculateMaximumWaterPercentage( rmgConfig.playerCount, mapSize ),
-                              rmgConfig.waterPercentage ) ) {
+                              rmgConfig.waterPercentage, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
-        if ( !getRMGInteger( config, "seed", 0, 999999, rmgConfig.seed ) ) {
+        if ( !getRMGInteger( config, "seed", 0, 999999, rmgConfig.seed, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
-        if ( !getRMGResourceDensity( config, rmgConfig.resourceDensity ) ) {
+        if ( !getRMGResourceDensity( config, rmgConfig.resourceDensity, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
-        if ( !getRMGMonsterStrength( config, rmgConfig.monsterStrength ) ) {
+        if ( !getRMGMonsterStrength( config, rmgConfig.monsterStrength, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
 
         int32_t mapCount{ 0 };
-        if ( !getRMGInteger( config, "count", 1, 20, mapCount ) ) {
+        if ( !getRMGInteger( config, "count", 1, 20, mapCount, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
         std::string baseName;
-        if ( !getRMGMapName( config, baseName ) ) {
+        if ( !getRMGMapName( config, baseName, error ) ) {
+            ERROR_LOG( error )
+            writeRMGStatus( rmgDir, error );
             return;
         }
 
         std::string mapDirectory = System::concatPath( rmgDir, "maps" );
         if ( !System::IsDirectory( mapDirectory ) && !System::MakeDirectory( mapDirectory ) ) {
-            ERROR_LOG( "Unable to create maps directory for random map generator output: " << mapDirectory )
+            const std::string message = "Unable to create maps directory for random map generator output: " + mapDirectory;
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
             return;
         }
 
         if ( !System::GetCaseInsensitivePath( mapDirectory, mapDirectory ) ) {
-            ERROR_LOG( "Unable to locate maps directory for random map generator output: " << mapDirectory )
+            const std::string message = "Unable to locate maps directory for random map generator output: " + mapDirectory;
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
             return;
         }
 
@@ -595,7 +637,9 @@ namespace
             }
 
             if ( !Maps::Random_Generator::generateMap( mapFormat, currentConfig, mapSize, mapSize ) ) {
-                ERROR_LOG( "Failed to generate random map from request: " << requestPath )
+                const std::string message = "Failed to generate random map from request: " + requestPath;
+                ERROR_LOG( message )
+                writeRMGStatus( rmgDir, message );
                 return;
             }
 
@@ -604,14 +648,18 @@ namespace
             }
 
             if ( !Maps::updateMapPlayers( mapFormat ) ) {
-                ERROR_LOG( "Generated random map is invalid and was not saved." )
+                const std::string message = "Generated random map is invalid and was not saved.";
+                ERROR_LOG( message )
+                writeRMGStatus( rmgDir, message );
                 return;
             }
 
             const std::string fileName = sanitizeRMGFileName( mapFormat.name ) + ".fh2m";
             const std::string outputPath = System::concatPath( mapDirectory, fileName );
             if ( !Maps::Map_Format::saveMap( outputPath, mapFormat ) ) {
-                ERROR_LOG( "Failed to save generated random map: " << outputPath )
+                const std::string message = "Failed to save generated random map: " + outputPath;
+                ERROR_LOG( message )
+                writeRMGStatus( rmgDir, message );
                 return;
             }
 
@@ -619,8 +667,13 @@ namespace
         }
 
         if ( !System::Unlink( requestPath ) ) {
-            ERROR_LOG( "Generated random maps, but failed to remove request file: " << requestPath )
+            const std::string message = "Generated random maps, but failed to remove request file: " + requestPath;
+            ERROR_LOG( message )
+            writeRMGStatus( rmgDir, message );
+            return;
         }
+
+        writeRMGStatus( rmgDir, "Generated " + std::to_string( mapCount ) + " random map(s) in " + mapDirectory );
     }
 #endif
 }
