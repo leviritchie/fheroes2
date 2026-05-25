@@ -33,3 +33,26 @@ fheroes2/
 The iOS build searches `Documents/fheroes2` and `Documents` before the bundled app resources. `HEROES2.AGG` and
 `HEROES2X.AGG` must be in the same imported `data` directory for Price of Loyalty support, Resurrection maps, the editor,
 and random map generation to unlock.
+
+# Headless random map generation
+
+The app creates `rmg-template.cfg` in the shared `Documents/fheroes2` directory. To generate maps without opening the
+editor UI, copy or rename it to `rmg.cfg`, set `enabled = on`, and restart the app.
+
+```text
+enabled = on
+count = 1
+size = medium
+players = 2
+water = 0
+seed = 0
+resource density = normal
+monster strength = normal
+name = Random map
+```
+
+`size` accepts `small`, `medium`, `large`, `extra large`, or the numeric widths `36`, `72`, `108`, and `144`.
+`resource density` accepts `scarce`, `normal`, or `abundant`; `monster strength` accepts `weak`, `normal`, `strong`, or
+`deadly`. `seed = 0` means a random seed. On success, generated `.fh2m` files are saved under `maps/`, and `rmg.cfg` is
+deleted so the request does not repeat on every launch. Invalid values fail closed and leave `rmg.cfg` in place for
+correction.
